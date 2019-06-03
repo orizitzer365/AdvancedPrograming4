@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "display";
+}
+<canvas id="Canvas"  width="0" height="0"></canvas>
+
+<script>
+
+    function drawCordinates(ctx, location) {
+        x = location.x;
+        y = location.y;
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+    }
+    function drawLines(ctx, locations) {
+        ctx.beginPath();
+        for (i = 0; i < locations.length; i++) {
+            if (i == 0) ctx.moveTo(locations[i].x, locations[i].y);
+            else ctx.lineTo(locations[i].x, locations[i].y);
+        }
+        ctx.strokeStyle = "red";
+        ctx.stroke();
+    }
+    var locations = [];
+
+    var canvas = document.getElementById("Canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+    var bkGround = new Image();
+    bkGround.onload = function () {
+        ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    };
+    bkGround.src = '/images/export-map-share.jpg';
+    var firstTime = 0;
+    
+    myTimer = (function () {
+        if (@Session["time"]== -1) {
+                 clearInterval(func);
+         }
+         $.post( "@Url.Action("GetLocation", "Default")").done(function (xml) {
+                var xmlDoc = $.parseXML( xml ),
+                $xml = $(xmlDoc),
+                Lon = $xml.find("Lon").text();
+             Lat = $xml.find("Lat").text();
+             
+             Lon = ((parseInt(Lon) + 180) * (ctx.canvas.width) / 360);
+             Lat = (parseInt(Lat) + 90) * (ctx.canvas.height / 180);
+             locations[locations.length] = ({ x: Lon, y: Lat });
+             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+             ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
+             for (i = 0; i < locations.length; i++) {
+                 drawCordinates(ctx, locations[i]);
+             }
+             drawLines(ctx, locations);
+             
+        });
+    });
+    var IntervalTime = @Session["time"] * 1000
+    var func = setInterval(myTimer, IntervalTime);
+
+    if (@Session["timeout"]!= 0)
+        setTimeout(function () { clearInterval(func); }, @Session["timeout"]* 1000);
+    
+</script>
