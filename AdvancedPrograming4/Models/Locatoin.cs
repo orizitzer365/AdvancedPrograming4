@@ -24,5 +24,9 @@ namespace AdvancedPrograming4.Models
             writer.WriteElementString("Lat", this.Lat.ToString());
             writer.WriteEndElement();
         }
+        public override string ToString()
+        {
+            return Lon.ToString() + "," + Lat.ToString();
+        }
     }
 }

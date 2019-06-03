@@ -11,21 +11,50 @@ namespace AdvancedPrograming4.Controllers
 {
     public class DefaultController : Controller
     {
-        private static Random rnd = new Random();
+        private LocationFactoryModel model;
+
+        private bool IsIP(string str)
+        {
+            System.Net.IPAddress custResult;
+            return System.Net.IPAddress.TryParse(str,out custResult);
+        }
 
         // GET: Default
         public ActionResult Index()
         {
             return View();
         }
-        public ActionResult display(string ip , int port,int refreshRate=-1,int timeout=0,string fileName=null)
+
+        public ActionResult display(string ip_or_file , int port_or_refreshRate)
         {
-            Session["time"] = refreshRate;
-            Session["timeout"] = timeout;
-            //set Model
+            Session["time"] = -1;
+            Session["timeout"] = 0;
+            if (IsIP(ip_or_file))
+            {
+                model = LocationFactoryModel.GetFromSimulatorFactory(ip_or_file, port_or_refreshRate);
+            } else
+            {
+                Session["time"] = port_or_refreshRate;
+                model = LocationFactoryModel.GetFromFile(ip_or_file);
+            }
             return View();
         }
 
+        public ActionResult display(string ip, int port, int refreshRate)
+        {
+            Session["time"] = refreshRate;
+            Session["timeout"] = 0;
+            model = LocationFactoryModel.GetFromSimulatorFactory(ip, port);
+            return View();
+        }
+
+        public ActionResult save(string ip, int port, int refreshRate, int timeout, string fileName)
+        {
+            Session["time"] = refreshRate;
+            Session["timeout"] = timeout;
+            model = LocationFactoryModel.GetFromSimulatorAndSaveFactory(ip, port, fileName);
+            return View();
+        }
 
         private string ToXml(Locatoin locatoin)
         {
@@ -48,9 +77,7 @@ namespace AdvancedPrograming4.Controllers
         [HttpPost]
         public string GetLocation()
         {
-
-            var loc = new Locatoin(rnd.Next(-180,180),rnd.Next(-90,90));
-
+            Locatoin loc = model.GetNext();
             return ToXml(loc);
         }
     }
