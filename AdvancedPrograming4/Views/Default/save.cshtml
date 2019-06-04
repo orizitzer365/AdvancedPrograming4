@@ -1,8 +1,9 @@
 ﻿
 @{
-    ViewBag.Title = "display";
+    ViewBag.Title = "save";
 }
-<canvas  id="Canvas"  width="0" height="0"></canvas>
+
+<canvas id="Canvas" width="0" height="0"></canvas>
 <style>
     body {
         margin: 0;
@@ -50,7 +51,7 @@
     };
     bkGround.src = '/images/export-map-share.jpg';
     var firstTime = 0;
-    
+
     myTimer = (function () {
         if (@Session["time"]== -1) {
                  clearInterval(func);
@@ -60,9 +61,11 @@
                 $xml = $(xmlDoc),
                 Lon = $xml.find("Lon").text();
              Lat = $xml.find("Lat").text();
-             
+
              Lon = ((parseInt(Lon) + 180) * (ctx.canvas.width) / 360);
              Lat = (parseInt(Lat) + 90) * (ctx.canvas.height / 180);
+             if (Lon == -1 && Lat == -1)
+                 clearInterval(func);
              locations[locations.length] = ({ x: Lon, y: Lat });
              ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
              ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -70,7 +73,7 @@
                  drawCordinates(ctx, locations[i]);
              }
              drawLines(ctx, locations);
-             
+
         });
     });
     var IntervalTime = @Session["time"] * 1000
@@ -78,5 +81,6 @@
 
     if (@Session["timeout"]!= 0)
         setTimeout(function () { clearInterval(func); }, @Session["timeout"]* 1000);
-    
+
 </script>
+

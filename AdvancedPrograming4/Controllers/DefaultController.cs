@@ -11,7 +11,12 @@ namespace AdvancedPrograming4.Controllers
 {
     public class DefaultController : Controller
     {
-        private LocationFactoryModel model;
+        
+        private LocationFactoryModel model
+        {
+            set => Session["model"] = value;
+            get => (LocationFactoryModel)Session["model"];
+        }
 
         private bool IsIP(string str)
         {
@@ -25,27 +30,33 @@ namespace AdvancedPrograming4.Controllers
             return View();
         }
 
-        public ActionResult display(string ip_or_file , int port_or_refreshRate)
-        {
-            Session["time"] = -1;
-            Session["timeout"] = 0;
-            if (IsIP(ip_or_file))
-            {
-                model = LocationFactoryModel.GetFromSimulatorFactory(ip_or_file, port_or_refreshRate);
-            } else
-            {
-                Session["time"] = port_or_refreshRate;
-                model = LocationFactoryModel.GetFromFile(ip_or_file);
-            }
-            return View();
-        }
+        
 
-        public ActionResult display(string ip, int port, int refreshRate)
+        public ActionResult display(string ip_or_file, int port_or_refreshRate, int refreshRate=-1)
         {
-            Session["time"] = refreshRate;
-            Session["timeout"] = 0;
-            model = LocationFactoryModel.GetFromSimulatorFactory(ip, port);
-            return View();
+            if (refreshRate != -1)
+            {
+                Session["time"] = refreshRate;
+                Session["timeout"] = 0;
+                model = LocationFactoryModel.GetFromSimulatorFactory(ip_or_file, port_or_refreshRate);
+                return View();
+            }
+            else
+            {
+                Session["time"] = -1;
+                Session["timeout"] = 0;
+                if (IsIP(ip_or_file))
+                {
+                    model = LocationFactoryModel.GetFromSimulatorFactory(ip_or_file, port_or_refreshRate);
+                }
+                else
+                {
+                    Session["time"] = port_or_refreshRate;
+                    model = LocationFactoryModel.GetFromFile(ip_or_file);
+                }
+                return View();
+            }
+            
         }
 
         public ActionResult save(string ip, int port, int refreshRate, int timeout, string fileName)
@@ -78,6 +89,8 @@ namespace AdvancedPrograming4.Controllers
         public string GetLocation()
         {
             Locatoin loc = model.GetNext();
+            if (loc == null)
+                loc = new Locatoin(-1, -1);
             return ToXml(loc);
         }
     }

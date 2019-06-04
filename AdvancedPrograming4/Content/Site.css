@@ -1,16 +1,16 @@
 ﻿body {
-    
+    margin:0px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    
+    margin: 0px;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
-    max-width: 280px;
+    //max-width: 280px;
 }
 
