@@ -65,24 +65,32 @@ namespace AdvancedPrograming4.Models
 
         public static LocationFactoryModel GetFromSimulatorAndSaveFactory(string ip, int port,string file)
         {
+            string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, file));
+
             LocationFactoryModel lfm = LocationFactoryModel.Instance;
             lfm.state = FactoryState.FROM_SIMULATOR_AND_SAVE;
             lfm.simulator = new Simulator(ip, port);
-            lfm.writer = new System.IO.StreamWriter(file);
+            
+            lfm.writer = System.IO.File.CreateText(path);
             return lfm;
         }
 
+        public const string SCENARIO_FILE = "~/App_Data/{0}.txt";           // The Path of the Secnario
+
         public static LocationFactoryModel GetFromFile(string file)
         {
+            string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, file));
+
             LocationFactoryModel lfm = LocationFactoryModel.Instance;
             lfm.state = FactoryState.FROM_FILE;
-            lfm.reader = new System.IO.StreamReader(file);
+            lfm.reader = new System.IO.StreamReader(path);
             return lfm;
         }
 
         private void Write(Locatoin loc,FlightInfo info)
         {
             writer.WriteLine("{0},{1}", loc, info);
+            writer.Flush();
         }
 
         private Locatoin Read()

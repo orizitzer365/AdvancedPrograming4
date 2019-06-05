@@ -48,7 +48,7 @@
     bkGround.onload = function () {
         ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
     };
-    bkGround.src = '/images/export-map-share.jpg';
+    bkGround.src = '/App_Data/export-map-share.jpg';
     var firstTime = 0;
     
     myTimer = (function () {
@@ -60,17 +60,21 @@
                 $xml = $(xmlDoc),
                 Lon = $xml.find("Lon").text();
              Lat = $xml.find("Lat").text();
-             
-             Lon = ((parseInt(Lon) + 180) * (ctx.canvas.width) / 360);
-             Lat = (parseInt(Lat) + 90) * (ctx.canvas.height / 180);
-             locations[locations.length] = ({ x: Lon, y: Lat });
-             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-             ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
-             for (i = 0; i < locations.length; i++) {
-                 drawCordinates(ctx, locations[i]);
-             }
-             drawLines(ctx, locations);
-             
+            if (Lon == -1 && Lat == -1) {
+                alert("Animation Done");
+                clearInterval(func);
+
+            } else {
+                Lon = ((parseInt(Lon) + 180) * (ctx.canvas.width) / 360);
+                Lat = (parseInt(Lat) + 90) * (ctx.canvas.height / 180);
+                locations[locations.length] = ({ x: Lon, y: Lat });
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                for (i = 0; i < locations.length; i++) {
+                    drawCordinates(ctx, locations[i]);
+                }
+                drawLines(ctx, locations);
+            }
         });
     });
     var IntervalTime = @Session["time"] * 1000

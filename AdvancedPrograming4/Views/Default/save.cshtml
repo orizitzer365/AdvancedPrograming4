@@ -49,7 +49,7 @@
     bkGround.onload = function () {
         ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
     };
-    bkGround.src = '/images/export-map-share.jpg';
+    bkGround.src = '/App_Data/export-map-share.jpg';
     var firstTime = 0;
 
     myTimer = (function () {
@@ -64,8 +64,7 @@
 
              Lon = ((parseInt(Lon) + 180) * (ctx.canvas.width) / 360);
              Lat = (parseInt(Lat) + 90) * (ctx.canvas.height / 180);
-             if (Lon == -1 && Lat == -1)
-                 clearInterval(func);
+             
              locations[locations.length] = ({ x: Lon, y: Lat });
              ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
              ctx.drawImage(bkGround, 0, 0, ctx.canvas.width, ctx.canvas.height);
